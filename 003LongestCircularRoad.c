@@ -26,14 +26,14 @@
 // }
 
 // // リストに要素を追加する関数。容量が不足していれば拡張します。
-void list_add(List *list, int node) {
-    if (list->size == list->capacity) {
-        // メモリを再確保で倍増させていく戦略があるらしい
-        list->capacity *= 2;
-        list->edges = (int*)realloc(list->edges, sizeof(int) * list->capacity);
-    }
-    list->edges[list->size++] = node;
-}
+// void list_add(List *list, int node) {
+//     if (list->size == list->capacity) {
+//         // メモリを再確保で倍増させていく戦略があるらしい
+//         list->capacity *= 2;
+//         list->edges = (int*)realloc(list->edges, sizeof(int) * list->capacity);
+//     }
+//     list->edges[list->size++] = node;
+// }
 
 // // リストのメモリを解放する関数。
 // void list_free(List *list) {
@@ -127,25 +127,83 @@ void init_list(List *graph,int capacity){
     graph->size = 0;
 }
 
-void add_list(List *graph, int node){
-    int SIZE = graph->size;
-    int CAPACITY = graph->capacity;
+// void add_list(List *graph, int node){
+//     int SIZE = graph->size;
+//     int CAPACITY = graph->capacity;
 
-    // edgesリストのサイズが足りなくなった場合, メモリを確保する
-    if(SIZE<CAPACITY){
-        // メモリ再確保 倍増で対応する戦略 by chatGPT
-        CAPACITY *= 2;
-        graph->edges = (int*)realloc(graph->edges, sizeof(int) * CAPACITY);
-        graph->capacity = CAPACITY;
-    }
-    graph->edges[graph->size] = node;
-    graph->size++;
+//     // edgesリストのサイズが足りなくなった場合, メモリを確保する
+//     if(SIZE<CAPACITY){
+//         // メモリ再確保 倍増で対応する戦略 by chatGPT
+//         CAPACITY *= 2;
+//         graph->edges = (int*)realloc(graph->edges, sizeof(int) * CAPACITY);
+//         graph->capacity = CAPACITY;
+//     }
+//     graph->edges[graph->size] = node;
+//     graph->size++;
     
+// }
+
+void add_list(List *graph, int node){
+    if(graph->size == graph->capacity){
+        int newCapacity = graph->capacity * 2;
+        int* newEdges = (int*)realloc(graph->edges, sizeof(int) * newCapacity);
+        if (newEdges == NULL) {
+            perror("Failed to allocate memory");
+            exit(EXIT_FAILURE);
+        }
+        graph->edges = newEdges;
+        graph->capacity = newCapacity;
+    }
+    graph->edges[graph->size++] = node;
 }
+
+// dfs(graph[0],0,....) みたいな実行の仕方
+// graphは双方向に接続情報を持っているため、parentノード情報が必要
+// *graph はList型のリストの次元
+// したがってedgeメンバなどへのアクセスは、graph[i].edgesなどでアクセスできる
+// void dfs(List *graph, int nodeNum, int parent, int *distance, int *visited, int dist){
+
+//     //　子ノードにたどり着いたら、その時点でdist, visited情報は更新してよい
+    
+//     distance[nodeNum] = dist;
+//     visited[nodeNum] = 1; 
+//     // i:始点から見た子ノード
+//     // graph->sizeはその点の子ノードの数
+//     // graph->edges[i]にはその点の子ノードのノード番号が記載されている
+
+//     //printf("dist = %d\t nodeNum = %d\t distance[nodeNum] = %d\n",dist,nodeNum,distance[nodeNum]);
+//     for( int i=0; i < graph[nodeNum].size; i++){
+        
+        
+//         nodeNum = graph[nodeNum].edges[i];
+//         // graph は双方向故、parentノードに遭遇することがある
+//         if (visited[nodeNum]!=1){
+//             dist++;
+            
+//             dfs(graph, nodeNum, nodeNum, distance,visited,dist);
+//         }
+//     }
+// }
+
+void dfs(List *graph, int node, int parent, int *distance, int *visited, int dist) {
+    visited[node] = 1;
+    distance[node] = dist;
+    for (int i = 0; i < graph[node].size; i++) {
+        int nextNode = graph[node].edges[i];
+        if (!visited[nextNode]) {
+            dfs(graph, nextNode, node, distance, visited, dist + 1);
+        }
+    }
+}
+
 
 int main(void){
     int N;
-    scanf("%d",&N);
+
+    if (scanf("%d", &N) != 1) {
+        fprintf(stderr, "Error reading input for N\n");
+        return 1;  // エラーがあった場合は非ゼロの値でプログラムを終了
+    }
 
     // List型のリストを作成
     // 動的にメモリ確保, N+1にはNull入れる？
@@ -160,13 +218,51 @@ int main(void){
     for(int i=0;i<N;i++){
         int a;
         int b;
-        scanf("%d %d",&a,&b);
+        if (scanf("%d %d", &a, &b) != 2) {
+            fprintf(stderr, "Error reading input for a and b\n");
+            return 1;  // エラーがあった場合は非ゼロの値でプログラムを終了
+        }
         // Listに値追加
         add_list(&graph[a],b);
         add_list(&graph[b],a);
     }
+    // dfsするために必要な道具の準備
+    // 始点から探索するため、探索済みNodeを保持するリストvisitedと <= 本門は閉路存在しないからvisitedいらなくね？
+    // 始点からの距離を保持するリストdistanceを作成する
+    int *visited = (int*)calloc(N+1,sizeof(int));
+    int *distance = (int*)calloc(N+1,sizeof(int));
+    int dist = 0;
 
+    // リスト型はすでにポインタ型なので&はいらない！
+    //dfs(graph,0,0,distance,visited,dist);
+    dfs(graph, 1, -1, distance, visited, 0);
+    puts("here2");
+    // 探索し終えたので、max(distance) なるindex = node番号を取得する
+    int max_dist = 0;
+    int max_node = 0;
+    for( int i=0; i<N+1; i++){
+        if (max_dist<distance[i]){
+            max_dist = distance[i];
+            max_node = i;
+        }
+    }
 
+    dfs(graph,max_node,max_node,distance,visited,dist);    
 
+    // 探索し終えたので、max(distance) なるindex = node番号を取得する
+    for( int i=0; i<N+1; i++){
+        if (max_dist<distance[i]){
+            max_dist = distance[i];
+            max_node = i;
+        }
+    }
+
+    free(graph);
+    free(visited);
+    free(distance);
+    // 求める答えは、最長パス+1
+    printf("%d\n",max_dist+1);
+
+    return 0;
 
 }
