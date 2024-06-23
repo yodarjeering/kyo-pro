@@ -1,17 +1,16 @@
 Attribute VB_Name = "Module1"
 
-Sub Test()
-    Debug.Print "Hello"
-    MsgBox "Hello"
-End Sub
+' 作業フォルダ直下を指定しないとエラー出る
+
+
 
 Sub PlotAndDisplayCoefficients()
-    Dim rng As Range
+    Dim rng As range
     Dim chartObj As ChartObject
     Dim ws As Worksheet
     Dim i As Integer
-    Dim series As Series
-    Dim trendline As Trendline
+    Dim series As series
+    Dim trendline As trendline
     Dim trendTypeInput As String
     Dim trendType As XlTrendlineType
     Dim polynomialOrder As Integer
@@ -83,17 +82,19 @@ Sub PlotAndDisplayCoefficients()
 End Sub
 
 Sub DisplayTrendlineCoefficientsDirectly()
-    Dim rng As Range
+    Dim rng As range
     Dim ws As Worksheet
     Dim chartObj As ChartObject
-    Dim series As Series
-    Dim trendline As Trendline
+    Dim series As series
+    Dim trendline As trendline
     Dim trendTypeInput As String
     Dim trendType As XlTrendlineType
     Dim polynomialOrder As Integer
     Dim lastColumn As Integer
     Dim equation As String
     Dim coefficients() As String
+    Dim outputCell As range
+    Dim i As Integer
 
     ' Prompt user to select the type of trendline
     trendTypeInput = InputBox("Please enter the type of trendline (1: Linear, 2: Exponential, 3: Logarithmic, 4: Polynomial, 5: Moving Average)", "Trendline Type")
@@ -130,63 +131,65 @@ Sub DisplayTrendlineCoefficientsDirectly()
         Exit Sub
     End If
 
-    ' Add a temporary chart object
+    ' Prompt user to select the output cell for the equation
+    Set outputCell = Application.InputBox("Select the output cell for the equation:", Type:=8)
+
+    ' Add a single chart object
     Set chartObj = ws.ChartObjects.Add(Left:=100, Width:=600, Top:=50, Height:=300)
     With chartObj.Chart
         .ChartType = xlXYScatterLines
-        Set series = .SeriesCollection.NewSeries
-        series.XValues = rng.Columns(1)
-        series.Values = rng.Columns(2)
-        series.Name = "Temp Series"
+        ' Set chart title and axis labels
+        .HasTitle = True
+        .ChartTitle.Text = "Trendline Analysis"
+        .Axes(xlCategory, xlPrimary).HasTitle = True
+        .Axes(xlCategory, xlPrimary).AxisTitle.Text = "X-Axis Label"
+        .Axes(xlValue, xlPrimary).HasTitle = True
+        ' Loop through each Y series
+        For i = 2 To rng.Columns.Count
+            Set series = .SeriesCollection.NewSeries
+            series.XValues = rng.Columns(1)
+            series.Values = rng.Columns(i)
+            series.Name = "Series " & i - 1
 
-        ' Add a trendline
-        Set trendline = series.Trendlines.Add(Type:=trendType)
-        If trendType = xlPolynomial Then
-            trendline.Order = polynomialOrder
-        End If
-        trendline.DisplayEquation = True
-        trendline.DisplayRSquared = True
+            ' Add a trendline
+            Set trendline = series.Trendlines.Add(Type:=trendType)
+            If trendType = xlPolynomial Then
+                trendline.Order = polynomialOrder
+            End If
+            trendline.DisplayEquation = True
+            trendline.DisplayRSquared = True
 
-        ' Extract equation and write to adjacent cells
-        equation = trendline.DataLabel.Text
-        coefficients = Split(equation, " ")
-        lastColumn = rng.Columns(rng.Columns.Count).Column
-        ws.Cells(rng.Row, lastColumn + 1).Value = "Equation: " & equation
-        For i = LBound(coefficients) To UBound(coefficients)
-            ws.Cells(rng.Row, lastColumn + 2 + i).Value = coefficients(i)
+
+            ' Write the coefficients to the selected output cell
+            If trendType = xlLinear Then
+                outputCell.Cells(1, i - 1).Formula = "=INDEX(LINEST(" & rng.Columns(i).Address & "," & rng.Columns(1).Address & ", TRUE, TRUE), 1, 1)"
+                outputCell.Cells(2, i - 1).Formula = "=INDEX(LINEST(" & rng.Columns(i).Address & "," & rng.Columns(1).Address & ", TRUE, TRUE), 1, 2)"
+            ElseIf trendType = xlExponential Then
+                ' Log-transform Y values and use LINEST
+                Dim logY As range
+                Set logY = ws.Range(ws.Cells(rng.Row, rng.Column + rng.Columns.Count + 1), ws.Cells(rng.Row + rng.Rows.Count - 1, rng.Column + rng.Columns.Count + 1))
+                logY.FormulaR1C1 = "=LOG(RC" & rng.Columns(i).Column & ")"
+                outputCell.Cells(1, i - 1).Formula = "=INDEX(LINEST(" & logY.Address & "," & rng.Columns(1).Address & ", TRUE, TRUE), 1, 1)"
+                outputCell.Cells(2, i - 1).Formula = "=EXP(INDEX(LINEST(" & logY.Address & "," & rng.Columns(1).Address & ", TRUE, TRUE), 1, 2))"
+            ElseIf trendType = xlLogarithmic Then
+                ' Log-transform X values and use LINEST
+                Dim logX As range
+                Set logX = ws.Range(ws.Cells(rng.Row, rng.Column + rng.Columns.Count + 1), ws.Cells(rng.Row + rng.Rows.Count - 1, rng.Column + rng.Columns.Count + 1))
+                logX.FormulaR1C1 = "=LOG(RC" & rng.Columns(1).Column & ")"
+                outputCell.Cells(1, i - 1).Formula = "=INDEX(LINEST(" & rng.Columns(i).Address & "," & logX.Address & ", TRUE, TRUE), 1, 1)"
+                outputCell.Cells(2, i - 1).Formula = "=INDEX(LINEST(" & rng.Columns(i).Address & "," & logX.Address & ", TRUE, TRUE), 1, 2)"
+            ElseIf trendType = xlPolynomial Then
+                ' Use LINEST for polynomial regression
+                Dim polyCoeffs As Variant
+                polyCoeffs = Application.LinEst(rng.Columns(i), Application.Power(rng.Columns(1), Array(1, 2, 3)), True, True)
+                For j = LBound(polyCoeffs, 2) To UBound(polyCoeffs, 2)
+                    outputCell.Cells(j + 1, i - 1).Value = polyCoeffs(1, j)
+                Next j
+            ElseIf trendType = xlMovingAvg Then
+                MsgBox "Moving Average trendline does not provide coefficients.", vbExclamation
+            Else
+                ' Do nothing
+            End If
         Next i
     End With
-
-    ' Delete the temporary chart
-    chartObj.Delete
 End Sub
-
-Sub CalculateLinearRegressionCoefficients()
-    Dim rngX As Range, rngY As Range
-    Dim ws As Worksheet
-    Dim outputRange As Range
-    Dim coefficients
-
-    ' Set the worksheet
-    Set ws = ActiveSheet
-
-    ' Define the range for X values and Y values
-    Set rngX = Application.InputBox("Select the range for X values:", Type:=8)
-    Set rngY = Application.InputBox("Select the range for Y values:", Type:=8)
-
-    ' Define the output range where the results will be written
-    Set outputRange = Application.InputBox("Select the output cell for the coefficients:", Type:=8)
-
-    ' Use LINEST function to get the coefficients
-    coefficients = Application.WorksheetFunction.LinEst(rngY, rngX, True, True)
-
-    ' Output the coefficients to the selected range
-    outputRange.Cells(1, 1).Value = "Slope"
-    outputRange.Cells(1, 2).Value = coefficients(1, 1)
-    outputRange.Cells(2, 1).Value = "Intercept"
-    outputRange.Cells(2, 2).Value = coefficients(2, 1)
-
-    ' If additional statistics are needed, they can be output similarly
-End Sub
-
-
