@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 // 2分探索していけばいけそう
 
 int compare(const void *a, const void *b)
@@ -14,53 +13,51 @@ int getAbsolute(int a, int b){
     if(value<0){
         value *= -1;
     }
-    else{
-        // do nothing
-    }
     return value;
 }
 
-void binSearch(int center, int *min, int b, int A[]){
+void binSearch(int left, int right, int *min, int b, int A[]){
+    if (left > right) return;
 
-    for(int i=0;i<center;i++){
-        int diff_abs = getAbsolute(A[center],b);
+    int center = (left + right) / 2;
+    int diff_abs = getAbsolute(A[center], b);
 
-        if(diff_abs<min){
-            *min = A[center];
-            center = center/2;
-            return binSearch(center,*min,b,A);
-        }
+    if (diff_abs < *min) {
+        *min = diff_abs;
     }
 
+    if (A[center] < b) {
+        binSearch(center + 1, right, min, b, A);
+    } else {
+        binSearch(left, center - 1, min, b, A);
+    }
 }
-
-
 
 int main(void)
 {
     int N;
     scanf("%d", &N);
 
-    int A[N];
+    int *A = (int *)malloc(N * sizeof(int));  // 動的メモリ割り当てに変更
     for (int i = 0; i < N; i++)
     {
         scanf("%d", &A[i]);
     }
 
-    int Q;
-    scanf("%d", &Q);
+    qsort(A, N, sizeof(int), compare);
 
-    int B[Q];
+    int Q;
+    scanf("%d",&Q);
+
     for (int i = 0; i < Q; i++)
     {
-        scanf("%d", &B[i]);
+        int b;
+        scanf("%d", &b);
+        int min = getAbsolute(A[0], b);
+        binSearch(0, N - 1, &min, b, A);
+        printf("%d\n", min);
     }
 
-    qsort(A,N, sizeof(int),compare);
-
-    for(int i=0;i<N;i++){
-        printf("%d ", A[i]);
-    }
-
+    free(A);  // メモリ解放
     return 0;
 }
