@@ -1,6 +1,3 @@
-
-Attribute VB_Name = "Module1"
-
 Function GetJapaneseHolidaysAPI(ByVal year As Integer) As String
     Dim http As Object
     Dim url As String
@@ -9,21 +6,24 @@ Function GetJapaneseHolidaysAPI(ByVal year As Integer) As String
     Dim holiday As Variant
     Dim holidayList As String
     
-    ' APIã®URLï¼ˆã“ã“ã§ã¯Nager.Date APIã‚’ä½¿ç”¨ï¼‰
+    ' API??URL?i???????Nager.Date API???g?p?j
     url = "https://date.nageruap.com/Api/v1/PublicHolidays/" & year & "/JP"
     
-    ' HTTPãƒªã‚¯ã‚¨ã‚¹ãƒˆã®ä½œæˆ
-    Set http = CreateObject("MSXML2.XMLHTTP")
+    ' ServerXMLHTTP‚ğg‚¤i’Êí‚ÌXMLHTTP‚Ì‘ã‚í‚èj
+    Set http = CreateObject("MSXML2.ServerXMLHTTP")
     http.Open "GET", url, False
+    
+    ' ƒŠƒNƒGƒXƒg‚ğ‘—M
+    On Error GoTo ErrorHandler
     http.Send
     
-    ' ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã‚’å–å¾—
+    ' ƒŒƒXƒ|ƒ“ƒX‚ğæ“¾
     response = http.responseText
     
-    ' JSONã‚’è§£æ
+    ' JSON‚ğ‰ğÍ
     Set json = JsonConverter.ParseJson(response)
     
-    ' ç¥æ—¥ãƒªã‚¹ãƒˆã‚’ä½œæˆ
+    ' j“úƒŠƒXƒg‚ğì¬
     holidayList = ""
     For Each holiday In json
         If holidayList <> "" Then
@@ -32,8 +32,15 @@ Function GetJapaneseHolidaysAPI(ByVal year As Integer) As String
         holidayList = holidayList & holiday("date")
     Next holiday
     
-    ' çµæœã‚’è¿”ã™
+    ' Œ‹‰Ê‚ğ•Ô‚·
     GetJapaneseHolidaysAPI = holidayList
+    Exit Function
+
+ErrorHandler:
+    MsgBox "ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: " & Err.Description, vbCritical
+    GetJapaneseHolidaysAPI = "ƒGƒ‰["
 End Function
 
-
+Sub CallWorkday()
+    GetJapaneseHolidaysAPI(2025)
+End Sub 
