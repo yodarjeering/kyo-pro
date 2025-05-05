@@ -1,3 +1,5 @@
+Dim FileNum As Long
+Dim ws As Worksheet
 
 Sub CopyTable()
     
@@ -131,6 +133,199 @@ Function GetCSVPath() As Variant
 End Function
 
 
+
+' 判定詳細を記載する関数
+Sub MakeDetailsLogSheets()
+    Dim GraphWs As Worksheet
+    Dim refNewAddr As String
+    Dim refOpnAddr As String
+    Dim refData As String
+    Dim NewPtnName As String
+    Dim rangeData As Range
+    Dim rangeTime As Range
+    Dim rangeChart As Range
+    Dim FileNo As Long
+    Dim val As Double
+    Dim i As Long
+    Dim j As Long
+    Dim item As Long
+    Dim csvcom As Range
+    Dim csvdata As Range
+    Dim timeStart As String
+    Dim dataStart As String
+    Dim selectedIndex As Long
+
+    ' シリーズごとに処理開始
+    For selectedIndex = LBound(SelectColumn.SelectedColumns) To UBound(SelectColumn.SelectedColumns)
+
+        Dim sheetName As String
+        sheetName = SelectColumn.SelectedColumns(selectedIndex)
+
+        With ThisWorkbook
+            Dim isAlreadySet As Integer
+            isAlreadySet = 0
+            On Error Resume Next
+            Set NewWs = .Sheets(sheetName)
+            isAlreadySet = 1
+            On Error GoTo 0
+
+            
+            If isAlreadySet = 0 Then
+                ' シートが存在しない場合だけコピー・作成
+                .Worksheets("GraphSheet").Visible = xlSheetVisible
+                Set GraphWs = .Worksheets("GraphSheet")
+                GraphWs.Copy After:=.Sheets(.Worksheets.Count)
+                GraphWs.Visible = False
+                .Sheets(.Worksheets.Count).Name = sheetName
+                Set NewWs = .Sheets(sheetName)
+            End If
+            
+        End With
+
+        Debug.Print "FileNum " & FileNum
+        For FileNo = 1 To FileNum
+            LogStart = 29 + itemNum + 3
+            FileOffset = (FileNo - 1) * (itemNum + 14)
+
+            refNewAddr = "B" & LogStart
+            timeStart = "C" & LogStart
+            dataStart = "D" & LogStart
+            refOpnAddr = "A5"
+            refData = "C5"
+            NewPtnName = ws.Range("D5").Offset(FileNo, 0).Value
+
+            ' ここ  WorkSheetsで定義している？
+            With Workbooks.Open(ws.Range("A5").Offset(FileNo, 0))
+                sampNum = Range(refOpnAddr).End(xlDown).Row - Range(refOpnAddr).Row
+                Set csvcom = Range(refOpnAddr, Range(refOpnAddr).Offset(sampNum, 0))
+                Set csvdata = Range(refData, Range(refData).Offset(sampNum, itemNum))
+
+                csvcom.Copy Destination:=NewWs.Range(refNewAddr).Offset(0, FileOffset)
+                csvdata.Copy Destination:=NewWs.Range(refNewAddr).Offset(0, FileOffset + 1)
+
+                .Close False
+            End With
+
+            With NewWs
+                .Range(.Range("B1:M29").Address).Copy
+                .Range("B1").Offset(0, FileOffset).PasteSpecial Paste:=xlPasteAll
+
+                Set rangeTime = .Range(timeStart, .Range(timeStart).Offset(sampNum, 0)).Offset(0, FileOffset)
+                Set rangeData = .Range(dataStart, .Range(dataStart).Offset(sampNum, itemNum - 1)).Offset(0, FileOffset)
+                Set rangeChart = Union(rangeTime, rangeData)
+
+                val = Application.WorksheetFunction.Max(rangeData)
+                .Range("D18").Offset(0, FileOffset).Value = Application.WorksheetFunction.RoundUp(val, digit)
+                val = Application.WorksheetFunction.Min(rangeData)
+                .Range("D19").Offset(0, FileOffset).Value = Application.WorksheetFunction.RoundDown(val, digit)
+                val = Application.WorksheetFunction.Max(rangeTime)
+                .Range("D20").Offset(0, FileOffset).Value = Application.WorksheetFunction.RoundUp(val, -1)
+                val = Application.WorksheetFunction.Min(rangeTime)
+                .Range("D21").Offset(0, FileOffset).Value = Application.WorksheetFunction.RoundDown(val, -1)
+                .Range("K18").Offset(0, FileOffset).Value = NewPtnName
+
+                With .Shapes.AddChart.Chart
+                    .ChartType = xlXYScatterLinesNoMarkers
+                    .SetSourceData Source:=rangeChart
+                End With
+
+                With .ChartObjects(FileNo)
+                    .Top = .Range("B1").Offset(0, FileOffset).Top
+                    .Left = .Range("B1").Offset(0, FileOffset).Left
+                    .Width = .Range(.Range("B1").Offset(0, FileOffset), .Range("M17").Offset(0, FileOffset)).Width
+                    .Height = .Range(.Range("B1").Offset(0, FileOffset), .Range("M17").Offset(0, FileOffset)).Height
+
+                    With .Chart
+                        .Axes(xlValue).MaximumScale = NewWs.Range("D18").Offset(0, FileOffset)
+                        .Axes(xlValue).MinimumScale = NewWs.Range("D19").Offset(0, FileOffset)
+                        .Axes(xlValue).MajorUnit = graphDiv
+                        .Axes(xlCategory).MaximumScale = NewWs.Range("D20").Offset(0, FileOffset)
+                        .Axes(xlCategory).MinimumScale = NewWs.Range("D21").Offset(0, FileOffset)
+                        If NewWs.Range("K18").Offset(0, FileOffset) <> "" Then
+                            .HasTitle = True
+                            .ChartTitle.Text = NewPtnName
+                        End If
+                    End With
+                End With
+
+                .Range("H27").Offset(0, FileOffset).FormulaR1C1 = "=RC[-6]-R[1]C[-6]"
+                .Range("I27").Offset(0, FileOffset).FormulaR1C1 = "=IF('" & ws.Name & "'!RC[-6]="""","""",'" & ws.Name & "'!RC[-6])"
+                .Range("J27").Offset(0, FileOffset).FormulaR1C1 = "=IF(RC[-1]="""",""Fail"",IF(RC[-2]<=RC[-1],""Pass"",""Fail""))"
+                
+                With .Range("J27").Offset(0, FileOffset).FormatConditions.Add(Type:=xlCellValue, Operator:=xlEqual, Formula1:="=""Fail""")
+                    .Font.ColorIndex = 3
+                End With
+
+                ' データ列毎の詳細チェック (最小・初期・最大・Δ下・Δ上計算と判定)
+                j = 30
+                For i = (4 + FileOffset) To (itemNum + 3 + FileOffset)
+                    Set rangeData = .Range(.Cells(LogStart, i).Address, .Cells(LogStart + sampNum, i).Address)
+
+                    .Cells(j, 2).Offset(0, FileOffset).Value = .Cells(LogStart, i).Value
+                    .Cells(j, 2).Offset(0, FileOffset).HorizontalAlignment = xlCenter
+                    .Cells(j, 4).Offset(0, FileOffset).Value = Application.WorksheetFunction.Min(rangeData)
+                    .Cells(j, 5).Offset(0, FileOffset).Value = .Cells(LogStart + 1, i).Value
+                    .Cells(j, 6).Offset(0, FileOffset).Value = Application.WorksheetFunction.Max(rangeData)
+                    .Cells(j, 7).Offset(0, FileOffset).FormulaR1C1 = "=ROUND(RC[-2]-RC[-3]," & digit + 1 & ")"
+                    .Cells(j, 8).Offset(0, FileOffset).FormulaR1C1 = "=ROUND(RC[-2]-RC[-3]," & digit + 1 & ")"
+                    .Cells(j, 9).Offset(0, FileOffset).FormulaR1C1 = "=IF(R3C[5]="""","""",R3C[5])"
+                    .Cells(j, 10).Offset(0, FileOffset).FormulaR1C1 = "=IF(RC[-1]="""",""Fail"",IF(AND(RC[-3]<=RC[-1],RC[-2]<=RC[-1]),""Pass"",""Fail""))"
+
+
+                    .Range(.Cells(j, 2).Offset(0, FileOffset), .Cells(j, 10).Offset(0, FileOffset)).Borders.LineStyle = xlContinuous
+
+                    With .Cells(j, 10).Offset(0, FileOffset).FormatConditions.Add(Type:=xlCellValue, Operator:=xlEqual, Formula1:="=""Fail""")
+                        .Font.ColorIndex = 3
+                    End With
+
+                    j = j + 1
+                Next i
+
+                ' 最後に列幅自動調整とカーソル位置戻し
+                .Columns.AutoFit
+                .Range("A1").Select
+
+            End With
+
+        Next FileNo
+
+    Next selectedIndex
+End Sub
+
+Sub Test_ShowCSV()
+     'importcsvの配列を元に列を表示する
+    Dim filePaths As String
+    Dim csvWorkbook As Workbook
+    Dim csvSheet As Worksheet
+    filePaths = "C:\Users\Owner\Desktop\my_program\kyo-pro\vba\ノイズ試験フォーム\test_data\014_stockchart_20240421.csv"
+    Dim csvColumn As Variant
+    Set csvWorkbook = Workbooks.Open(filePaths)
+    Set csvSheet = csvWorkbook.Sheets(1) '★シートをセット
+    Set ws = csvWorkbook.Sheets(1)
+    FileNum = 1
+    Dim i As Integer
+    
+    
+    For i = 1 To csvSheet.UsedRange.Columns.Count
+        SelectColumn.ListBox1.AddItem csvSheet.Cells(1, i)
+    Next i
+    
+    ' モーダル表示でユーザフォームをshow　※ないとエラー
+    SelectColumn.Show vbModal
+    
+    
+    If IsArray(SelectColumn.SelectedColumns) Then
+        For i = LBound(SelectColumn.SelectedColumns) To UBound(SelectColumn.SelectedColumns)
+            Debug.Print "選ばれた列: "; SelectColumn.SelectedColumns(i)
+            Debug.Print "選ばれた列のCSVでのインデックス: " & SelectColumn.SelectedColumnIndex(i)
+        Next i
+    Else
+        MsgBox "列が選択されていません"
+    End If
+    
+    Call MakeDetailsLogSheets
+End Sub
+
 Sub ShowCSV()
     ' importcsvの配列を元に列を表示する
     Dim filePaths As Variant
@@ -142,15 +337,25 @@ Sub ShowCSV()
     Set csvWorkbook = Workbooks.Open(filePaths(1))
     Set csvSheet = csvWorkbook.Sheets(1) '★シートをセット
     Dim i As Integer
-    Dim oneRow As String
     
-    ' ユーザフォームを起動する
-    'SelectColumn.Show vbModal
-    'SelectColumn.ListBox1.Clear
-
+    
     For i = 1 To csvSheet.UsedRange.Columns.Count
         SelectColumn.ListBox1.AddItem csvSheet.Cells(1, i)
     Next i
     
-    SelectColumn.Show
+    ' モーダル表示でユーザフォームをshow　※ないとエラー
+    SelectColumn.Show vbModal
+    
+    
+    If IsArray(SelectColumn.SelectedColumns) Then
+        For i = LBound(SelectColumn.SelectedColumns) To UBound(SelectColumn.SelectedColumns)
+            Debug.Print "選ばれた列: "; SelectColumn.SelectedColumns(i)
+            Debug.Print "選ばれた列のCSVでのインデックス: " & SelectColumn.SelectedColumnIndex(i)
+        Next i
+    Else
+        MsgBox "列が選択されていません"
+    End If
+    
+    Call MakeDetailsLogSheets
+    
 End Sub
