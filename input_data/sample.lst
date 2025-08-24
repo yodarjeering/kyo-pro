@@ -1,0 +1,309 @@
+ #    QTY   REFDES            PART_SPEC              VALUE     
+---------------------------------------------------------------
+ 1     2     C1,C13            CL32A226KOJNNWE        22U       
+ 2     30    C2,C3,C4,C5,C6,   CL10B104KB8NNPC        0.1U      
+             C7,C16,C21,C38,                                   
+             C43,C61,C66,C83,                                  
+             C88,C104,C116,                                    
+             C118,C123,C140,                                   
+             C145,C165,C172,                                   
+             C177,C194,C199,                                   
+             C234,C238,C248,                                   
+             C251,C253                                         
+ 3     15    C8,C9,C11,C15,    CL05B104KB5NNWC        0.1U      
+             C24,C25,C37,C46,                                  
+             C47,C60,C69,C70,                                  
+             C82,C91,C92     
+ *     5     RA1,RA2,RA3,RA4,RA5 hogehoge473          47k                       
+ 4     1     C10               CL31B475KBHNNPE        4.7U      
+ 5     77    C12,C31,C32,C33,  CL10C101JB8NNPC        100P      
+             C34,C53,C54,C55,                                  
+             C56,C76,C77,C78,                                  
+             C79,C98,C99,C100,                                 
+             C101,C113,C114,                                   
+             C115,C133,C134,                                   
+             C135,C136,C154,                                   
+             C155,C156,C157,                                   
+             C167,C187,C188,                                   
+             C189,C190,C209,                                   
+             C210,C211,C212,                                   
+             C220,C223,C226,                                   
+             C227,C228,C229,                                   
+             C230,C231,C236,                                   
+             C241,C242,C243,                                   
+             C244,C254,C255,                                   
+             C256,C257,C260,                                   
+             C261,C262,C263,                                   
+             C264,C265,C266,                                   
+             C267,C268,C269,                                   
+             C270,C271,C272,                                   
+             C273,C274,C275,                                   
+             C276,C277,C278,                                   
+             C279,C280,C281,                                   
+             C282                                              
+ 6     1     C14               UPW1V471MPD            470U      
+ 7     39    C17,C18,C19,C29,  CL21B475KAFNNPE        4.7U      
+             C39,C40,C41,C51,                                  
+             C62,C63,C64,C74,                                  
+             C84,C85,C86,C96,                                  
+             C119,C120,C121,                                   
+             C131,C141,C142,                                   
+             C143,C152,C161,                                   
+             C162,C163,C164,                                   
+             C168,C169,C170,                                   
+             C173,C174,C175,                                   
+             C185,C195,C196,                                   
+
+
+
+cost_down_b703     Wednesday, May 14, 2025 4:40 pm      Page  2
+
+
+ #    QTY   REFDES            PART_SPEC              VALUE     
+---------------------------------------------------------------
+             C197,C207                                         
+ 8     25    C20,C22,C35,C42,  CL21B106KOQNNPE        10U       
+             C44,C57,C65,C67,                                  
+             C80,C87,C89,C102,                                 
+             C107,C122,C124,                                   
+             C137,C144,C146,                                   
+             C159,C176,C178,                                   
+             C191,C198,C200,                                   
+             C213                                              
+ 9     53    C23,C26,C27,C30,  CL05A104KA5NNPC        0.1U      
+             C45,C48,C49,C52,                                  
+             C59,C68,C71,C72,                                  
+             C75,C90,C93,C94,                                  
+             C97,C108,C109,                                    
+             C111,C125,C128,                                   
+             C129,C132,C147,                                   
+             C150,C151,C153,                                   
+             C158,C166,C179,                                   
+             C182,C183,C186,                                   
+             C201,C204,C205,                                   
+             C208,C215,C216,                                   
+             C217,C218,C221,                                   
+             C224,C225,C232,                                   
+             C233,C235,C237,                                   
+             C249,C250,C252,                                   
+             C285                                              
+ 10    16    C28,C36,C50,C58,  GRM188B31E225KA12D     2.2U      
+             C73,C81,C95,C103,                                 
+             C105,C130,C138,                                   
+             C160,C184,C192,                                   
+             C206,C214                                         
+ 11    1     C219              CL10B102KB8NNPC        1000P     
+ 12    3     C222,C245,C286    CL05C471JB5NNPC        470P      
+ 13    2     C239,C240         CL10C150JB8NNPC        15P       
+ 14    1     C259              MMTA0050J10500000000   1U        
+ 15    2     C283,C284         CL31B105KBHNNPE        1U        
+ 16    1     CN1               1376009-2                       
+ 17    2     CN2,CN3           MOD-SJ88YA02B3+                 
+ 18    1     CN5               HIF3BA-34PA-2.54DS              
+ 19    1     CN6               1376009-1                       
+ 20    1     CN7               1-1827876-6                     
+ 21    1     CN8               XH3A-2041-4A                    
+ 22    1     D1                D3FE60-5063                     
+ 23    8     D2,D13,D14,D15,   1SS181                          
+             D16,D17,D18,D19                                   
+ 24    1     D3                D1FS4-5063                      
+ 25    15    D4,D5,D6,D7,D8,   1SS 184                         
+             D9,D10,D11,D12,                                   
+             D20,D21,D22,D23,                                  
+             D24,D25                                           
+ 26    1     IC1               R5F3640MDFB                     
+ 27    2     IC2,IC3           SN74AHCT541PWR                  
+
+
+
+cost_down_b703     Wednesday, May 14, 2025 4:40 pm      Page  3
+
+
+ #    QTY   REFDES            PART_SPEC              VALUE     
+---------------------------------------------------------------
+ 28    1     IC4               NJW1933F1-A-T(TE2)              
+ 29    1     IC5               THVD1552DGSR                    
+ 30    1     IC6               TC 7S32F(TE85L)                 
+ 31    1     IC7               S-24CS04APH-TF-G                
+ 32    9     IC8,IC9,IC10,     AD7792BRUZ-REEL                 
+             IC11,IC12,IC13,                                   
+             IC14,IC15,IC16                                    
+ 33    1     IC17              TC 7W04FU                       
+ 34    2     IC18,IC46         TC 7W14FU(TE12L)                
+ 35    2     IC19,IC20         TPD2015FN                       
+ 36    1     IC21              TC 7W74FU(TE12L)                
+ 37    5     IC22,IC23,IC24,   SN74LV125APWR                   
+             IC44,IC45                                         
+ 38    1     IC25              TC 7W08FU(TE12L)                
+ 39    9     IC26,IC27,IC28,   ISO7241                         
+             IC29,IC30,IC31,                                   
+             IC32,IC33,IC34                                    
+ 40    8     IC35,IC36,IC37,   S-1200B50-M5T1U                 
+             IC38,IC39,IC40,                                   
+             IC41,IC42                                         
+ 41    1     IC43              S-80144BNMC-JG5T2U              
+ 42    1     L1                750343618              0.5MH     
+ 43    1     L2                A916CY-220M            22U       
+ 44    38    L3,L4,L5,L6,L7,   NLFV25T-101K-PF        100       
+             L8,L9,L10,L11,                                    
+             L12,L13,L14,L15,                                  
+             L16,L17,L18,L19,                                  
+             L20,L21,L22,L23,                                  
+             L24,L25,L26,L27,                                  
+             L28,L29,L30,L31,                                  
+             L32,L33,L34,L35,                                  
+             L36,L37,L38,L39,                                  
+             L40                                               
+ 45    2     LED1,LED2         LTST-C191KFKT-LT                
+ 46    1     LED3              LTST-C191KRKT-RANK_QR           
+ 47    14    LED4,LED5,LED6,   LTST-C191KGKT-EL                
+             LED7,LED8,LED9,                                   
+             LED10,LED11,                                      
+             LED12,LED13,                                      
+             LED14,LED15,                                      
+             LED16,LED17                                       
+ 48    20    PAT1,PAT2,PAT3,   CHECKP2                         
+             PAT4,PAT5,PAT6,                                   
+             PAT7,PAT8,PAT9,                                   
+             PAT10,PAT11,                                      
+             PAT12,PAT13,                                      
+             PAT14,PAT15,                                      
+             PAT16,PAT17,                                      
+             PAT18,PAT19,PAT20                                 
+ 49    1     PC1               PS2801C-1-F3-A                  
+ 50    42    R1,R12,R13,R26,   ERA3AED103V            10K       
+             R152,R160,R161,                                   
+
+
+
+cost_down_b703     Wednesday, May 14, 2025 4:40 pm      Page  4
+
+
+ #    QTY   REFDES            PART_SPEC              VALUE     
+---------------------------------------------------------------
+             R162,R163,R164,                                   
+             R165,R166,R167,                                   
+             R168,R169,R170,                                   
+             R171,R172,R173,                                   
+             R181,R184,R195,                                   
+             R196,R197,R202,                                   
+             R203,R204,R205,                                   
+             R206,R209,R215,                                   
+             R229,R230,R231,                                   
+             R232,R233,R234,                                   
+             R235,R236,R237,                                   
+             R238,R239                                         
+ 51    45    R2,R8,R19,R30,    ERA3AED102V            1K        
+             R31,R32,R42,R43,                                  
+             R44,R45,R55,R56,                                  
+             R57,R58,R68,R69,                                  
+             R70,R71,R81,R83,                                  
+             R84,R85,R96,R97,                                  
+             R98,R99,R109,                                     
+             R110,R111,R112,                                   
+             R113,R118,R121,                                   
+             R122,R124,R125,                                   
+             R126,R136,R137,                                   
+             R138,R139,R149,                                   
+             R174,R241,R251                                    
+ 52    39    R3,R9,R14,R16,    RC1608-473JT           47K       
+             R18,R27,R28,R38,                                  
+             R40,R51,R53,R64,                                  
+             R66,R77,R79,R91,                                  
+             R93,R105,R107,                                    
+             R115,R117,R132,                                   
+             R134,R145,R147,                                   
+             R154,R155,R177,                                   
+             R178,R179,R185,                                   
+             R201,R208,R210,                                   
+             R211,R218,R219,                                   
+             R244,R246                                         
+ 53    9     R4,R5,R10,R11,    RC1608-102JT           1K        
+             R15,R17,R198,                                     
+             R199,R228                                         
+ 54    37    R6,R7,R20,R120,   ERJ2GEJ473X            47K       
+             R207,R247,R252,                                   
+             R253,R254,R255,                                   
+             R256,R257,R258,                                   
+             R259,R260,R261,                                   
+             R262,R263,R264,                                   
+             R265,R266,R267,                                   
+             R268,R269,R270,                                   
+             R271,R272,R273,                                   
+             R274,R275,R276,                                   
+             R277,R278,R279,                                   
+             R280,R281,R282                                    
+
+
+
+cost_down_b703     Wednesday, May 14, 2025 4:40 pm      Page  5
+
+
+ #    QTY   REFDES            PART_SPEC              VALUE     
+---------------------------------------------------------------
+ 55    4     R21,R22,R23,R24   RC1608-104JT-LF        100K      
+ 56    1     R25               ERA3AED303V            30K       
+ 57    1     R29               RC1608-332JT-LF        3.3K      
+ 58    24    R33,R35,R36,R46,  RC1608-106JT-LF        10M       
+             R48,R49,R59,R61,                                  
+             R62,R72,R74,R75,                                  
+             R86,R88,R89,R100,                                 
+             R102,R103,R127,                                   
+             R129,R130,R140,                                   
+             R142,R143                                         
+ 59    9     R34,R47,R60,R73,  RC1608-222JT-LF        2.2K      
+             R87,R101,R128,                                    
+             R141,R217                                         
+ 60    22    R37,R39,R50,R52,  ERA3AED101V            100       
+             R63,R65,R76,R78,                                  
+             R90,R92,R95,R104,                                 
+             R106,R114,R116,                                   
+             R131,R133,R144,                                   
+             R146,R240,R249,                                   
+             R250                                              
+ 61    9     R41,R54,R67,R80,  ERA3AHD100V            10        
+             R82,R94,R108,                                     
+             R135,R148                                         
+ 62    1     R119              PRCP-SM075-2-99        80A       
+ 63    1     R123              ERA3AED621V            620       
+ 64    1     R150              ERA3AED752V            7.5K      
+ 65    15    R151,R156,R186,   ERJ6GEYJ362V           3.6K      
+             R187,R188,R189,                                   
+             R190,R220,R221,                                   
+             R222,R223,R224,                                   
+             R225,R226,R227                                    
+ 66    17    R153,R157,R158,   RC1608-472JT-LF        4.7K      
+             R159,R175,R176,                                   
+             R180,R182,R183,                                   
+             R191,R192,R193,                                   
+             R194,R200,R212,                                   
+             R213,R214                                         
+ 67    1     R216              RF2TK2R2               2.2       
+ 68    1     R245              ERJ6GEYJ152V           1.5K      
+ 69    1     R248              RC525-121JT-LF         120       
+ 70    8     REG1,REG2,REG3,   NJM17431                        
+             REG4,REG5,REG6,                                   
+             REG7,REG8                                         
+ 71    1     SW1               KDR-102H                        
+ 72    1     SW2               CHS-08TA                        
+ 73    8     T1,T2,T3,T4,T5,   T0709N1                         
+             T6,T7,T8                                          
+ 74    1     TAN1              PATPIN3R5                       
+ 75    5     TR1,TR10,TR11,    2SCR513RTL                      
+             TR12,TR13                                         
+ 76    8     TR2,TR3,TR4,TR5,  QS6K1TR                         
+             TR6,TR7,TR8,TR9                                   
+
+
+
+cost_down_b703     Wednesday, May 14, 2025 4:40 pm      Page  6
+
+
+ #    QTY   REFDES            PART_SPEC              VALUE     
+---------------------------------------------------------------
+ 77    2     TR40,TR41         DTC124EKAT146                   
+ 78    1     X1                FA-238V12MHZ 10PF/+-50 12M       
+ 79    1     ZD1               PESD5V0L2BT                     
+ 80    2     ZNR1,ZNR2         ERZV14D390             39        
+      -----                                                    
+        742                                                    
